@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Configure where
 
 import Text.Show.Unicode(ushow)
@@ -9,8 +10,10 @@ import System.IO (hSetBuffering, stdin, BufferMode(NoBuffering))
 
 import Parsing 
 import Data as D
-import Parser
+import Parser as PA
 import Scraper
+
+import qualified Text.Parsec as PP
 
 initialNews = "# NA ([],0) \n# NM ([],0) \n# NB ([],0)"
 initialConfig = "#Fondo 4 0 \n#Fuente 3 1 \n#P [] [] []"
@@ -27,8 +30,9 @@ notistemp="Config/NoticiasTemps.cfg"
 
 
 
---TODO : hacer que findNews pueda devolver Errores, quizas con Maybe y cambiar todo o Either
-
+--TODO : hacer que ws pueda devolver Errores, quizas con Maybe y cambiar todo o Either
+--TODO : SI hay un error en Noticias.cfg no devuelve nada
+-- TODO : hacer procesarConf y ver como maneja errores de parceo
 
 
 --Evalua la Configuracion y ejecuta el cambio de estilo
@@ -37,14 +41,15 @@ evalConf (Fondo c i)  = setSGR [ SetColor Background (toColorI i) (toColor c) ]
 evalConf (Fuente c i) = setSGR [ SetColor Foreground (toColorI i) (toColor c) ]
 
 --Parsea las noticias en el archivo de noticias
-findNews  :: Either Parser.ParseError News
+findNews :: IO News
 findNews  = do
               checkNews
               contN <- readFile notis
-              case (Parser.parse (parseNews emptyNews) contN) of
+              return $ PA.parse (parseNews emptyNews) contN
+              case (PA.parse (parseNews emptyNews) contN) of
                     Left e -> do putStrLn "Error parsing input:"
                                  print e
-                                 return e
+                                 return emptyNews
                     Right n -> return n
 --              return $ fst $ (Parser.parse (parseNews emptyNews) contN) !! 0
 
@@ -105,14 +110,14 @@ restoreDefault = do
                     return ()                    
 
 --Ejecuta la configuracion grafica
-procesarConf :: IO ([Config],Prior)
-procesarConf = do
-                  cont <- readFile cfg
-                  let c = (fst $ (Parser.parse (p1 [] emptyData ) cont ) !! 0 )
-                      in do mapM_ evalConf $ fst c
-                            return (fst c ,snd c)       
+--procesarConf :: IO ([Config],Prior)
+--procesarConf = do
+--                  cont <- readFile cfg
+--                  let c = PA.parse (p1 [] emptyData ) cont 
+--                      in do mapM_ evalConf $ fst c
+--                            return (fst c ,snd c)       
 
-
+procesarConf = return ([Fondo 1 2 ,Fuente 1 2],D.P ["http://www.ole.com.ar/rss/ultimas-noticias/"]["https://www.ole.com.ar/rss/ultimas-noticias/"]["http://www.laizquierdadiario.com/spip.php?page=backend_portada"])
 --Funcion para cambiar el Estilo del programa
 
 elegirColor :: Prior -> IO ()

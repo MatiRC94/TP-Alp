@@ -19,6 +19,7 @@ import Data.Char
 --Mis Datos
 import Data as D
 
+
 -- alias parseTest for more concise usage in my examples:
 parse rule text = P.parse rule "tester" text
 
@@ -244,7 +245,7 @@ auxN :: P.ParsecT [Char] u Identity [Char]
 auxN =  do
            P.string "(\""
            P.manyTill P.anyChar (P.try (P.string "{}\",\""))
-
+test2 :: IO (Either P.ParseError News)
 test2 = (readFile "tester") >>= \x -> return $ parse (parseNews  (N ([],0) ([],0) ([],0))) x
 --test3 = (readFile "tester") >>= \x -> return $ parse2 (parseNews  (N ([],0) ([],0) ([],0))) x
 

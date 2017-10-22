@@ -28,6 +28,11 @@ extractData :: Maybe [(Maybe String, Maybe String)] -> [(String,String)]
 extractData (Just feedlist ) = map extract feedlist
 extractData _                = error "error en el parseo de feed"
 
+--Extraer los datos tomados de getTuples
+extractData2 :: Maybe [(Maybe String, Maybe String)] -> IO [(String,String)]
+extractData2 (Just feedlist ) = return $map extract feedlist
+extractData2 _                = putStrLn "Error en el Screapeo, url erronea" >> return []
+
 --Para ver errores y sacar el Just
 extract :: (Maybe String, Maybe String) -> (String,String)
 extract (Just title,Just link) = (title++"{}",link)
@@ -44,16 +49,9 @@ getResponseRss2 :: String -> IO String
 getResponseRss2 s = do 
                      result <- try (simpleHTTP (getRequest s)) :: IO (Either SomeException (Result (Response String)))
                      case result of 
-                          Left ex  -> error ("Caught exception: " ++ show ex)
+                          Left ex  -> putStrLn ("Caught exception: " ++ show ex) >> return "Hubo un Error"
                           Right val -> getResponseBody val >>= \x -> return $ decodeString x
 
---getResponseRss2 :: String -> IO String
---getResponseRss2 s = do 
-  --                   result <- simpleHTTP (getRequest s) :: Network.TCP.HStream ty => IO (Either SomeException (Network.Stream.Result (Network.HTTP.Base.Response ty)) )
-    --                 case try (getResponseBody val) of 
-      --                   >>= \x -> return $ decodeString x
-test ::IO (Either SomeException (Result (Response String)))
-test =try $ simpleHTTP $ getRequest "https://www.ole.com.ar/rss/ultimas-noticias/"
 
 --Imprime las tuplas
 printTuples :: [(String, String)] -> IO ()
@@ -65,5 +63,5 @@ probando rss = getTuples rss >>= \x -> printTuples $ extractData x
 
 --Funcion de scraping
 scrap :: String -> IO [(String,String)]
-scrap rss = getTuples rss >>= \x -> return $ extractData x
+scrap rss = getTuples rss >>= \x -> extractData2 x
 
