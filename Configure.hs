@@ -32,7 +32,7 @@ notistemp="Config/NoticiasTemps.cfg"
 
 --TODO : hacer que ws pueda devolver Errores, quizas con Maybe y cambiar todo o Either
 --TODO : SI hay un error en Noticias.cfg no devuelve nada
--- TODO : hacer procesarConf y ver como maneja errores de parseo
+-- TODO : ver cuando cambias de color que podes poner cualquier fruta ver arrreglo de parsercito2 del main
 
 
 --Evalua la Configuracion y ejecuta el cambio de estilo
