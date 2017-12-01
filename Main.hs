@@ -113,13 +113,13 @@ verNoticias news = do
                      case c of 
                          '1' -> showNews Alta >>= \x -> case x of
                                                              1 -> volverMenu
-                                                             0 ->  irUrl Alta news >> volverMenu
+                                                             0 ->  irUrl Alta news -- >> volverMenu
                          '2' -> showNews Media >>= \x -> case x of
                                                               1 -> volverMenu
-                                                              0 ->  irUrl Media news >> volverMenu
+                                                              0 ->  irUrl Media news -- >> volverMenu
                          '3' -> showNews Baja >>= \x -> case x of
                                                              1 -> volverMenu
-                                                             0 -> irUrl Baja news >> volverMenu
+                                                             0 -> irUrl Baja news -- >> volverMenu
                          'v' -> volverMenu
                          'q' -> exitSuccess
                          _   -> putStrLn "Tecla incorrecta" >> verNoticias news
@@ -153,19 +153,46 @@ actNoticias p n = do
                          _   -> putStrLn "Tecla incorrecta" >> actNoticias p n
 
 -- Abre el Link elegido si el indice es correcto
+--irUrl2 :: Priority -> News -> IO ()
+--irUrl2 p n = do
+--                 putStrLn "\n"
+--                 putStrLn "\n\nElija una Noticia para Abrir en Firefox o presione 0 para volver"
+--                 buffering
+--                 c <- getLine
+--                 case parsercito c of
+--                      Left x  -> irUrl p n
+--                      Right i -> case str of
+--                                      Left t    -> putStrLn "Error de Indice"
+--                                      Right url -> (runCommand $ "firefox "++url) >> irUrl p n
+--                                 where str = getUrlNews p n i
+
+-- Abre el Link elegido si el indice es correcto
 irUrl :: Priority -> News -> IO ()
 irUrl p n = do
                  putStrLn "\n"
-                 putStrLn "\n\nElija una Noticia para Abrir en Firefox o Escriba un indice incorrecto para volver"
+                 putStrLn "\n\nElija una Noticia para Abrir en Firefox o presione 0 para volver"
                  buffering
                  c <- getLine
-                 case parsercito c of
-                      Left x  -> irUrl p n
-                      Right i -> case str of
-                                      Left t    -> putStrLn "Error de Indice"
-                                      Right url -> (runCommand $ "firefox "++url) >> irUrl p n
-                                 where str = getUrlNews p n i
+                 parsercito2 c p n
                 
+--Parser para corroborar que lo ingresado sea un indice 
+parsercito2 :: String -> Priority -> News -> IO () 
+parsercito2 s p n = case indices s of
+                         Right 0 -> putStrLn "Elegiste el 0" >> return ()
+                         Right x -> case str of
+                                         Left inderr -> putStrLn ("El indice "++show x++" es erroneo") >> irUrl p n
+                                         Right url   -> (runCommand $ "firefox "++url) >> irUrl p n
+                                    where str = getUrlNews p n x
+                         Left err  -> putStrLn (show err) >> irUrl p n
+
+
+--Parser para corroborar que lo ingresado sea un indice 
+--parsercito :: String -> Either (IO ()) Int
+--parsercito s = case (parse integer s) of
+--                    [] -> Left $ putStrLn (s++"No es una opcion valida")
+--                    x  -> case (x!!0) of
+--                               (a,"") -> Right a
+--                               _      -> Left $ putStrLn (s++"No es una opcion valida")
 
 --Menu sobre RSS
 infoRss :: Prior -> [Config] -> IO ()
@@ -187,14 +214,9 @@ eliminarRss :: Prior -> [Config] -> IO ()
 eliminarRss pr conf = putStrLn "Ingrese Link RSS:" >> 
                       buffering >> 
                       getLine >>= \url -> if elem url (a pr) || elem url (m pr) || elem url (b pr) then removerUrlConf url (conf,pr) >>  putStrLn ( url++"    Removido de la lista ") else putStrLn "Url Invalida" >> eliminarRss pr conf
+
                       
---Parser para corroborar que lo ingresado sea un indice 
-parsercito :: String -> Either (IO ()) Int
-parsercito s = case (parse integer s) of
-                    [] -> Left $ putStrLn (s++"No es una opcion valida")
-                    x  -> case (x!!0) of
-                               (a,"") -> Right a
-                               _      -> Left $ putStrLn (s++"No es una opcion valida")
+
 
 --Menu de opciones graficas
 graphOptions :: Prior -> IO ()

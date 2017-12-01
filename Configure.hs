@@ -32,7 +32,7 @@ notistemp="Config/NoticiasTemps.cfg"
 
 --TODO : hacer que ws pueda devolver Errores, quizas con Maybe y cambiar todo o Either
 --TODO : SI hay un error en Noticias.cfg no devuelve nada
--- TODO : hacer procesarConf y ver como maneja errores de parceo
+-- TODO : hacer procesarConf y ver como maneja errores de parseo
 
 
 --Evalua la Configuracion y ejecuta el cambio de estilo
@@ -117,7 +117,8 @@ restoreDefault = do
 --                      in do mapM_ evalConf $ fst c
 --                            return (fst c ,snd c)       
 
-procesarConf = return ([Fondo 1 2 ,Fuente 1 2],D.P ["http://www.ole.com.ar/rss/ultimas-noticias/"]["https://www.ole.com.ar/rss/ultimas-noticias/"]["http://www.laizquierdadiario.com/spip.php?page=backend_portada"])
+--no aanda ole porque es https
+procesarConf = return ([Fondo 1 2 ,Fuente 1 2],D.P ["http://contenidos.lanacion.com.ar/herramientas/rss-origen=2"]["https://www.ole.com.ar/rss/ultimas-noticias/"]["http://www.laizquierdadiario.com/spip.php?page=backend_portada"])
 --Funcion para cambiar el Estilo del programa
 
 elegirColor :: Prior -> IO ()
@@ -239,6 +240,6 @@ writeNews Baja l p (N na1 nm1 nb1) = do
                                         writeFile notistemp ( "# NA "++ ushow na1 ++ "\n# NM "++ ushow nm1 ++"\n# NB ("++ ushow l ++","++ ushow tam ++")") >> secNotis
 
 
-
+indices = PA.parse numeros
 
 

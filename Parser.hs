@@ -19,10 +19,16 @@ import Data.Char
 --Mis Datos
 import Data as D
 
+--borrar
+--import qualified Text.Parsec.Token as T
+
+--import Text.Parsec.Language (haskellDef)
 
 -- alias parseTest for more concise usage in my examples:
-parse rule text = P.parse rule "tester" text
+parse rule text = P.parse rule "ERROR en" text
 
+
+--BORRAR
 parse2 rule text = case P.parse rule "tester" text of
                         Left err -> do putStrLn "Error parsing input:"
                                        print err
@@ -224,7 +230,7 @@ tuplas' = do
             url <- com1
             P.string "\")"
 --            P.char '\"'
---            P.char ')'
+--            P.char ')'known)" (line 1, column 6):
             ((do
                  P.char ','
                  t2 <- tuplas'
@@ -233,8 +239,16 @@ tuplas' = do
           <|> return []
 
 numeros :: P.ParsecT [Char] u Identity Int
-numeros = P.many P.digit >>= \a -> return $ (read a :: Int)
+--numeros = do (P.many P.digit >>= \a -> return (read a :: Int)) <?> "Couldn't find Digit" --digitToInt a
+numeros = ( do
+                     n <- P.many1 P.digit
+                     return (read n :: Int) )
+                <?> "solo numeros"
 
+--num :: P.ParsecT [Char] u Identity Int
+--num = P.natural >>= \a -> return a
+
+--numerosRaro = (T.natural (T.makeTokenParser haskellDef))  REQUIERE LOS IMPORTS Q estan comentados
 
 --auxN :: P.ParsecT [Char] u Identity [Char]
 --auxN = P.manyTill P.anyChar (P.string "\",\"")
@@ -245,6 +259,7 @@ auxN :: P.ParsecT [Char] u Identity [Char]
 auxN =  do
            P.string "(\""
            P.manyTill P.anyChar (P.try (P.string "{}\",\""))
+
 test2 :: IO (Either P.ParseError News)
 test2 = (readFile "tester") >>= \x -> return $ parse (parseNews  (N ([],0) ([],0) ([],0))) x
 --test3 = (readFile "tester") >>= \x -> return $ parse2 (parseNews  (N ([],0) ([],0) ([],0))) x

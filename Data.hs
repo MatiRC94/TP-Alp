@@ -77,7 +77,7 @@ getUrlNews Alta (N na nm nb) n  = if snd na < n+1 || n < 0 then Left 0 else Righ
 getUrlNews Media (N na nm nb) n = if snd nm < n+1 || n < 0 then Left 0 else Right $ snd $ (fst nm)!!n
 getUrlNews Baja (N na nm nb) n  = if snd nb < n+1 || n < 0 then Left 0 else Right $ snd $ (fst nb)!!n
 
-
+--getUrlNews _ (N x nm nb) n  = if snd x < n+1 || n < 0 then Left 0 else Right $ snd $ (fst x)!!n
 
 
 
