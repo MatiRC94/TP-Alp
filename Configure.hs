@@ -197,11 +197,11 @@ removerUrlConf' url pr conf = do
 --Tomando una prioridad, Muestra las noticias que esten en el archivo de noticias sin actualizarlas
 showNews :: Priority -> IO Int
 showNews Alta  = findNews >>= \x -> let tupla = na x
-                                    in if snd(tupla)==0 then putStrLn "No hay noticias" >> return 1 else mapM_ auxPrint (zip [0..] (fst tupla)) >> return 0                                    
+                                    in if snd(tupla)==0 then putStrLn "No hay noticias" >> return 1 else mapM_ auxPrint (zip [1..] (fst tupla)) >> return 0                                    
 showNews Media = findNews >>= \x -> let tupla = nm x
-                                    in if snd(tupla)==0 then putStrLn "No hay noticias" >> return 1 else mapM_ auxPrint (zip [0..] (fst tupla)) >> return 0
+                                    in if snd(tupla)==0 then putStrLn "No hay noticias" >> return 1 else mapM_ auxPrint (zip [1..] (fst tupla)) >> return 0
 showNews Baja  = findNews >>= \x -> let tupla = nb x
-                                    in if snd(tupla)==0 then putStrLn "No hay noticias" >> return 1 else mapM_ auxPrint (zip [0..] (fst tupla)) >> return 0
+                                    in if snd(tupla)==0 then putStrLn "No hay noticias" >> return 1 else mapM_ auxPrint (zip [1..] (fst tupla)) >> return 0
 
 --Para imprimir de forma mas elegante y con numeros
 auxPrint :: (Int,(String,Url)) -> IO ()
@@ -227,7 +227,7 @@ auxParse (x:xs) =  do
                      scr  <- scrap x
                      scr2 <- auxParse xs
                      --return $ scr++scr2
-                     return $ [(x,x)]++scr++scr2
+                     return $ [(x++"{}",x)]++scr++scr2
 
 -- Escribe en el archivo de noticias las nuevas noticias
 writeNews :: Priority -> [(String,Url)] -> Prior -> News -> IO ()

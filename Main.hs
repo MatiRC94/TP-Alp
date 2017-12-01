@@ -80,10 +80,10 @@ agregarLinks tup = do
                      c <- listarOpc prioridad
                      putStr "\n"                     
                      case c of
-                         '1' -> agregarUrlConf url Alta tup >> putStrLn  (url++" Agregado") >> volverMenu
-                         '2' -> agregarUrlConf url Media tup >> putStrLn (url++" Agregado") >> volverMenu
-                         '3' -> agregarUrlConf url Baja tup >> putStrLn (url++" Agregado") >> volverMenu
-                         'v' -> volverMenu
+                         '1' -> agregarUrlConf url Alta tup >> putStrLn  (url++" Agregado") >> return () --volverMenu 
+                         '2' -> agregarUrlConf url Media tup >> putStrLn (url++" Agregado") >> return () --volverMenu 
+                         '3' -> agregarUrlConf url Baja tup >> putStrLn (url++" Agregado") >> return () --volverMenu 
+                         'v' -> return () --volverMenu 
                          'q' -> exitSuccess
                          _   -> putStrLn "Tecla incorrecta" >> agregarLinks tup
 
@@ -97,7 +97,7 @@ menuNoticias p n = do
                      case c of 
                          '1' -> verNoticias n
                          '2' -> actNoticias p n
-                         'v' -> volverMenu
+                         'v' -> return () --volverMenu 
                          'q' -> exitSuccess
                          _   -> putStrLn "Tecla incorrecta" >> menuNoticias p n
 
@@ -112,15 +112,15 @@ verNoticias news = do
                      cursorStart
                      case c of 
                          '1' -> showNews Alta >>= \x -> case x of
-                                                             1 -> volverMenu
+                                                             1 -> volverMenu 
                                                              0 ->  irUrl Alta news -- >> volverMenu
                          '2' -> showNews Media >>= \x -> case x of
-                                                              1 -> volverMenu
+                                                              1 -> volverMenu 
                                                               0 ->  irUrl Media news -- >> volverMenu
                          '3' -> showNews Baja >>= \x -> case x of
-                                                             1 -> volverMenu
+                                                             1 -> volverMenu 
                                                              0 -> irUrl Baja news -- >> volverMenu
-                         'v' -> volverMenu
+                         'v' -> return () --volverMenu 
                          'q' -> exitSuccess
                          _   -> putStrLn "Tecla incorrecta" >> verNoticias news
 
@@ -134,21 +134,21 @@ actNoticias p n = do
                      cursorStart
                      case c of
                          '1' ->  putStrLn "Cargando\n" >> updateNews Alta p n >>= \x -> case x of
-                                                                                             1 -> volverMenu
+                                                                                             1 -> volverMenu 
                                                                                              0 -> findNews >>= \news -> showNews Alta >>= \x -> case x of
-                                                                                                                                                     1 -> volverMenu
+                                                                                                                                                     1 -> return () --volverMenu 
                                                                                                                                                      0 ->  irUrl Alta news -- >> volverMenu
                          '2' ->  putStrLn "Cargando\n" >> updateNews Media p n >>= \x -> case x of
-                                                                    1 -> volverMenu
+                                                                    1 -> volverMenu 
                                                                     0 -> findNews >>= \news -> showNews Media >>= \x -> case x of
-                                                                                                                             1 -> volverMenu
+                                                                                                                             1 -> return () --volverMenu 
                                                                                                                              0 ->  irUrl Media news -- >> volverMenu
                          '3' ->  putStrLn "Cargando\n" >> updateNews Baja p n >>= \x -> case x of
-                                                                                             1 -> volverMenu
+                                                                                             1 -> volverMenu 
                                                                                              0 -> findNews >>= \news -> showNews Baja >>= \x -> case x of
-                                                                                                                                                     1 -> volverMenu
+                                                                                                                                                     1 -> return () --volverMenu 
                                                                                                                                                      0 ->  irUrl Baja news -- >> volverMenu
-                         'v' -> volverMenu
+                         'v' -> return () --volverMenu 
                          'q' -> exitSuccess
                          _   -> putStrLn "Tecla incorrecta" >> actNoticias p n
 
@@ -201,10 +201,10 @@ infoRss pr conf = do
                     putStrLn "Que desea hacer ?"
                     c <- listarOpc opRss
                     case c of
-                         '1' -> cursorStart >> showUrls pr >> checkAll pr >> volverMenu
-                         '2' -> cursorStart >> showUrls pr >> eliminarRss pr conf >> volverMenu
-                         '3' -> agregarLinks (conf,pr) >> volverMenu
-                         'v' -> volverMenu
+                         '1' -> cursorStart >> showUrls pr >> checkAll pr >> volverMenu 
+                         '2' -> cursorStart >> showUrls pr >> eliminarRss pr conf >> volverMenu 
+                         '3' -> agregarLinks (conf,pr) >> volverMenu 
+                         'v' -> return () --volverMenu 
                          'q' -> exitSuccess
                          _   -> putStrLn "Tecla incorrecta" >> infoRss pr conf
 
@@ -225,10 +225,10 @@ graphOptions p =  do
                     putStrLn "Que desea hacer ?"
                     c <- listarOpc opGraph
                     case c of
-                         '1' -> elegirColor p >> volverMenu
-                         '2' -> defaultConfig >> volverMenu
+                         '1' -> elegirColor p >> return () --volverMenu 
+                         '2' -> defaultConfig >> return () --volverMenu 
                          'q' -> exitSuccess
-                         'v' -> volverMenu
+                         'v' -> return () --volverMenu 
                          _   -> putStrLn "Tecla incorrecta" >> graphOptions p
 
 
