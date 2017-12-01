@@ -73,11 +73,10 @@ checkAll' url = mapM_ checkUrl url
 
 --Obtener las Urls o un 0 en caso de no existir ninguna
 getUrlNews :: Priority -> News -> Int -> Either Int Url
-getUrlNews Alta (N na nm nb) n  = if snd na < n+1 || n < 0 then Left 0 else Right $ snd $ (fst na)!!n
-getUrlNews Media (N na nm nb) n = if snd nm < n+1 || n < 0 then Left 0 else Right $ snd $ (fst nm)!!n
-getUrlNews Baja (N na nm nb) n  = if snd nb < n+1 || n < 0 then Left 0 else Right $ snd $ (fst nb)!!n
-
---getUrlNews _ (N x nm nb) n  = if snd x < n+1 || n < 0 then Left 0 else Right $ snd $ (fst x)!!n
+--getUrlNews Alta (N na nm nb) n  = if snd na < n+2 || n < 0 then Left 0 else Right $ snd $ (fst na)!!n
+--getUrlNews Media (N na nm nb) n = if snd nm < n+2 || n < 0 then Left 0 else Right $ snd $ (fst nm)!!n
+--getUrlNews Baja (N na nm nb) n  = if snd nb < n+2 || n < 0 then Left 0 else Right $ snd $ (fst nb)!!n
+getUrlNews _ (N x nm nb) n  = if snd x < n+2 || n < 0 then Left 0 else Right $ snd $ (fst x)!!n
 
 
 

@@ -45,7 +45,7 @@ findNews :: IO News
 findNews  = do
               checkNews
               contN <- readFile notis
-              return $ PA.parse (parseNews emptyNews) contN
+            --  return $ PA.parse (parseNews emptyNews) contN
               case (PA.parse (parseNews emptyNews) contN) of
                     Left e -> do putStrLn "Error parsing input:"
                                  print e
@@ -110,15 +110,17 @@ restoreDefault = do
                     return ()                    
 
 --Ejecuta la configuracion grafica
---procesarConf :: IO ([Config],Prior)
---procesarConf = do
---                  cont <- readFile cfg
---                  let c = PA.parse (p1 [] emptyData ) cont 
---                      in do mapM_ evalConf $ fst c
---                            return (fst c ,snd c)       
+procesarConf :: IO ([Config],Prior)
+procesarConf = do
+                  cont <- readFile cfg
+                  case PA.parse (p1 [] emptyData ) cont of
+                       Left err -> do putStrLn (show err) >> return ([],emptyData)
+                       Right n -> mapM_ evalConf ( fst n) >> return n
+     --                 in do mapM_ evalConf $ fst c
+       --                     return (fst c ,snd c)       
 
 --no aanda ole porque es https
-procesarConf = return ([Fondo 1 2 ,Fuente 1 2],D.P ["http://contenidos.lanacion.com.ar/herramientas/rss-origen=2"]["https://www.ole.com.ar/rss/ultimas-noticias/"]["http://www.laizquierdadiario.com/spip.php?page=backend_portada"])
+--procesarConf = return ([Fondo 1 2 ,Fuente 1 2],D.P ["http://contenidos.lanacion.com.ar/herramientas/rss-origen=2"]["https://www.ole.com.ar/rss/ultimas-noticias/"]["http://www.laizquierdadiario.com/spip.php?page=backend_portada"])
 --Funcion para cambiar el Estilo del programa
 
 elegirColor :: Prior -> IO ()

@@ -137,17 +137,17 @@ actNoticias p n = do
                                                                                              1 -> volverMenu
                                                                                              0 -> findNews >>= \news -> showNews Alta >>= \x -> case x of
                                                                                                                                                      1 -> volverMenu
-                                                                                                                                                     0 ->  irUrl Alta news >> volverMenu
+                                                                                                                                                     0 ->  irUrl Alta news -- >> volverMenu
                          '2' ->  putStrLn "Cargando\n" >> updateNews Media p n >>= \x -> case x of
                                                                     1 -> volverMenu
                                                                     0 -> findNews >>= \news -> showNews Media >>= \x -> case x of
                                                                                                                              1 -> volverMenu
-                                                                                                                             0 ->  irUrl Media news >> volverMenu
+                                                                                                                             0 ->  irUrl Media news -- >> volverMenu
                          '3' ->  putStrLn "Cargando\n" >> updateNews Baja p n >>= \x -> case x of
                                                                                              1 -> volverMenu
                                                                                              0 -> findNews >>= \news -> showNews Baja >>= \x -> case x of
                                                                                                                                                      1 -> volverMenu
-                                                                                                                                                     0 ->  irUrl Baja news >> volverMenu
+                                                                                                                                                     0 ->  irUrl Baja news -- >> volverMenu
                          'v' -> volverMenu
                          'q' -> exitSuccess
                          _   -> putStrLn "Tecla incorrecta" >> actNoticias p n

@@ -25,6 +25,7 @@ import Data as D
 --import Text.Parsec.Language (haskellDef)
 
 -- alias parseTest for more concise usage in my examples:
+parse :: P.Stream s Identity t => P.Parsec s () a -> s -> Either P.ParseError a
 parse rule text = P.parse rule "ERROR en" text
 
 
