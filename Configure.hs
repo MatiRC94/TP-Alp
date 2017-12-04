@@ -2,11 +2,13 @@
 module Configure where
 
 import Text.Show.Unicode(ushow)
-import System.Console.ANSI as A (setSGR, SGR(..), ColorIntensity(..), ColorIntensity(..),ConsoleLayer (..), Color, clearScreen )
+import System.Console.ANSI as A (setSGR, SGR(..), ColorIntensity(..), ColorIntensity(..),ConsoleLayer (..), Color, clearScreen, setCursorPosition )
 import System.IO (putStrLn, getChar, readFile, writeFile)
 import System.Directory (createDirectoryIfMissing,doesFileExist,renameFile,removeFile)
 import Data.Char (digitToInt)
 import System.IO (hSetBuffering, stdin, BufferMode(NoBuffering))
+import System.Console.Terminal.Size -- (size, Window)
+import Data.Maybe (fromJust)
 
 import Parsing 
 import Data as D
@@ -26,13 +28,31 @@ cfg = "Config/Config.cfg"
 notis="Config/Noticias.cfg"
 cfgtemp = "Config/ConfigTemp.cfg"
 notistemp="Config/NoticiasTemps.cfg"
-
+bienvenida = "Bienvenido al Visor de noticias"
 
 
 
 --TODO : hacer que ws pueda devolver Errores, quizas con Maybe y cambiar todo o Either
 --TODO : SI hay un error en Noticias.cfg no devuelve nada
 -- TODO : ver cuando cambias de color que podes poner cualquier fruta ver arrreglo de parsercito2 del main
+
+
+
+--Calcula el tamano de la consola
+tamano :: IO Int
+tamano = tamano2 >>= \x -> case x of
+                                Window a b -> return b
+tamano2 :: IO (Window Int)
+tamano2 = size >>= \x -> return (fromJust x)
+
+
+-- Centrar el cursor para Escribir el titulo del Programa
+cursorCol :: IO Int
+cursorCol = tamano >>= \t -> return (div (t- length bienvenida) 2)            
+
+cursorStart :: IO ()
+cursorStart =  clearScreen >> setCursorPosition 0 0
+
 
 
 --Evalua la Configuracion y ejecuta el cambio de estilo
@@ -140,6 +160,32 @@ elegirColor p = do
                      clearScreen
                      changeConfigCol p [digitToInt(c1),digitToInt(i1),digitToInt(c2),digitToInt(i2)] 
 
+verificarColor :: Prior -> IO ()
+verificarColor p = do
+                     putStrLn "\nElija su estilo "
+                     putStrLn "Color de Fondo:"
+                     c1  <- listarOpc colores
+                     case indices [c1] of
+                          Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
+                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> verificarColor p else cursorStart
+                     putStrLn "Intensidad del color:"
+                     i1 <- listarOpc intensidad
+                     case indices [i1] of
+                          Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
+                          Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> verificarColor p else cursorStart
+                     putStrLn "Color de Fuente:"
+                     c2  <- listarOpc colores
+                     case indices [c2] of
+                          Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
+                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> verificarColor p else cursorStart
+                     putStrLn "Intensidad del color:"
+                     i2 <- listarOpc intensidad
+                     case indices [i1] of
+                          Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
+                          Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> verificarColor p else cursorStart
+                     changeConfigCol p [digitToInt(c1),digitToInt(i1),digitToInt(c2),digitToInt(i2)] 
+                        
+
 --Listar el argumento en forma de opciones
 listarOpc :: [String] -> IO Char
 listarOpc x = do 
@@ -241,7 +287,7 @@ writeNews Baja l p (N na1 nm1 nb1) = do
                                         let tam = length l
                                         writeFile notistemp ( "# NA "++ ushow na1 ++ "\n# NM "++ ushow nm1 ++"\n# NB ("++ ushow l ++","++ ushow tam ++")") >> secNotis
 
-
+indices :: [Char] -> Either PP.ParseError Int
 indices = PA.parse numeros
 
 

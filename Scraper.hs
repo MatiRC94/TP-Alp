@@ -31,7 +31,7 @@ extractData _                = error "error en el parseo de feed"
 --Extraer los datos tomados de getTuples
 extractData2 :: Maybe [(Maybe String, Maybe String)] -> IO [(String,String)]
 extractData2 (Just feedlist ) = return $map extract feedlist
-extractData2 _                = putStrLn "Error en el Screapeo, url erronea" >> return []
+extractData2 _                = putStrLn "Error en el Screapeo, url erronea (debe tener http)" >> return []
 
 --Para ver errores y sacar el Just
 extract :: (Maybe String, Maybe String) -> (String,String)

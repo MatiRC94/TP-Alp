@@ -2,10 +2,8 @@ module Main where
 
 import System.Console.ANSI as A 
 import System.IO (hSetBuffering, stdin, BufferMode(LineBuffering))
-import System.Console.Terminal.Size -- (size, Window)
 import System.Exit (exitSuccess) 
 import Data.Char (digitToInt)
-import Data.Maybe (fromJust)
 import System.Process (runCommand, ProcessHandle)
 
 import Parsing (parse, integer)
@@ -18,27 +16,14 @@ opGraph = ["1- Cambiar Estilo","2- Default Config","v- Volver Menu","q- Salir"]
 opNews = ["1- Ver Noticias", "2- Actualizar Noticias","v- Volver Menu","q- Salir"]
 prioridad = ["1- Alta", "2- Media", "3- Baja","v- Volver Menu", "q- Salir"]
 titulo = "Resumidor de Noticias"
-bienvenida = "Bienvenido al Visor de noticias"
+
 
 
 --Funcion para cargar el buffer y poder aceptar backspaces con getLine
 buffering :: IO ()
 buffering = hSetBuffering stdin LineBuffering
 
---Calcula el tamano de la consola
-tamano :: IO Int
-tamano = tamano2 >>= \x -> case x of
-                                Window a b -> return b
-tamano2 :: IO (Window Int)
-tamano2 = size >>= \x -> return (fromJust x)
 
-
--- Centrar el cursor para Escribir el titulo del Programa
-cursorCol :: IO Int
-cursorCol = tamano >>= \t -> return (div (t- length bienvenida) 2)            
-
-cursorStart :: IO ()
-cursorStart =  clearScreen >> setCursorPosition 0 0
 
 --Menu principal
 menu :: ([Config],Prior) -> IO ()           
@@ -50,9 +35,9 @@ menu tup = do
                   '2' -> agregarLinks tup
                   '3' -> infoRss (snd tup) (fst tup)
                   '4' -> graphOptions (snd tup)
-                  '5' -> putStrLn "\n Se volvio a la configuracion Default" >> restoreDefault
+                  '5' -> restoreDefault >> putStrLn "\n Se volvio a la configuracion Default"
                   'q' -> exitSuccess
-                  _   -> putStrLn "\nTecla incorrecta" >> menu tup
+                  _   -> cursorStart >> putStrLn "\nTecla incorrecta" >> menu tup
              tup2 <- procesarConf
              cursorStart
              menu tup2
@@ -73,19 +58,20 @@ agregarLinks :: ([Config],Prior) -> IO ()
 agregarLinks tup = do 
                      buffering
                      cursorStart
-                     putStrLn "Ingrese Link RSS:"
-                     url <- getLine
-                     cursorStart
-                     putStrLn "Prioridad ?"                    
-                     c <- listarOpc prioridad
-                     putStr "\n"                     
-                     case c of
-                         '1' -> agregarUrlConf url Alta tup >> putStrLn  (url++" Agregado") >> return () --volverMenu 
-                         '2' -> agregarUrlConf url Media tup >> putStrLn (url++" Agregado") >> return () --volverMenu 
-                         '3' -> agregarUrlConf url Baja tup >> putStrLn (url++" Agregado") >> return () --volverMenu 
-                         'v' -> return () --volverMenu 
-                         'q' -> exitSuccess
-                         _   -> putStrLn "Tecla incorrecta" >> agregarLinks tup
+                     putStrLn "Ingrese Link RSS o escriba 'v':"
+                     url <- getLine 
+                     if url=="v" then return () else (do
+                        cursorStart
+                        putStrLn "Prioridad ?"                    
+                        c <- listarOpc prioridad
+                        putStr "\n"                     
+                        case c of
+                            '1' -> agregarUrlConf url Alta tup >> putStrLn  (url++" Agregado") >> return () --volverMenu 
+                            '2' -> agregarUrlConf url Media tup >> putStrLn (url++" Agregado") >> return () --volverMenu 
+                            '3' -> agregarUrlConf url Baja tup >> putStrLn (url++" Agregado") >> return () --volverMenu 
+                            'v' -> return () --volverMenu 
+                            'q' -> exitSuccess
+                            _   -> putStrLn "Tecla incorrecta" >> agregarLinks tup)
 
 -- Menu de opciones de noticias
 menuNoticias :: Prior-> News -> IO ()
@@ -203,7 +189,7 @@ infoRss pr conf = do
                     case c of
                          '1' -> cursorStart >> showUrls pr >> checkAll pr >> volverMenu 
                          '2' -> cursorStart >> showUrls pr >> eliminarRss pr conf >> volverMenu 
-                         '3' -> agregarLinks (conf,pr) >> volverMenu 
+                         '3' -> agregarLinks (conf,pr) -- >> volverMenu 
                          'v' -> return () --volverMenu 
                          'q' -> exitSuccess
                          _   -> putStrLn "Tecla incorrecta" >> infoRss pr conf
@@ -211,9 +197,13 @@ infoRss pr conf = do
 
 --Eliminar un Link RSS si el link se encuentra en la lista
 eliminarRss :: Prior -> [Config] -> IO ()
-eliminarRss pr conf = putStrLn "Ingrese Link RSS:" >> 
+eliminarRss pr conf = putStrLn "Ingrese Link RSS o escriba 'v':" >> 
                       buffering >> 
-                      getLine >>= \url -> if elem url (a pr) || elem url (m pr) || elem url (b pr) then removerUrlConf url (conf,pr) >>  putStrLn ( url++"    Removido de la lista ") else putStrLn "Url Invalida" >> eliminarRss pr conf
+                      getLine >>= \url -> if elem url (a pr) || elem url (m pr) || elem url (b pr) then removerUrlConf url (conf,pr) >>
+                      putStrLn ( url++"\n Removido de la lista ") else 
+                      case url of 
+                           "v" -> return ()
+                           _ ->putStrLn (url++"  no es una Url valida, debe escribirla exactamente como esta guardada") >> eliminarRss pr conf
 
                       
 
