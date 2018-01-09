@@ -36,7 +36,7 @@ menu tup = do
                   '3' -> infoRss (snd tup) (fst tup)
                   '4' -> graphOptions (snd tup)
                   '5' -> restoreDefault >> putStrLn "\n Se volvio a la configuracion Default"
-                  'q' -> exitSuccess
+                  'q' -> cursorStart >> exitSuccess
                   _   -> cursorStart >> putStrLn "\nTecla incorrecta" >> menu tup
              tup2 <- procesarConf
              cursorStart
@@ -215,7 +215,7 @@ graphOptions p =  do
                     putStrLn "Que desea hacer ?"
                     c <- listarOpc opGraph
                     case c of
-                         '1' -> elegirColor p >> return () --volverMenu 
+                         '1' -> verificarColor p >> return () --volverMenu --elegirColor p cambiado por verificarColor p
                          '2' -> defaultConfig >> return () --volverMenu 
                          'q' -> exitSuccess
                          'v' -> return () --volverMenu 

@@ -167,24 +167,50 @@ verificarColor p = do
                      c1  <- listarOpc colores
                      case indices [c1] of
                           Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
-                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> verificarColor p else cursorStart
+                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> return () else cursorStart
                      putStrLn "Intensidad del color:"
                      i1 <- listarOpc intensidad
                      case indices [i1] of
                           Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
-                          Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> verificarColor p else cursorStart
+                          Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> return () else cursorStart
                      putStrLn "Color de Fuente:"
                      c2  <- listarOpc colores
                      case indices [c2] of
                           Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
-                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> verificarColor p else cursorStart
+                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> return () else cursorStart
                      putStrLn "Intensidad del color:"
                      i2 <- listarOpc intensidad
-                     case indices [i1] of
+                     case indices [i2] of
                           Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
-                          Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> verificarColor p else cursorStart
+                          Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> return () else cursorStart
                      changeConfigCol p [digitToInt(c1),digitToInt(i1),digitToInt(c2),digitToInt(i2)] 
                         
+
+verificaFColor :: Prior -> IO ()
+verificaFColor p = do
+                     putStrLn "\nElija su estilo "
+                     putStrLn "Color de Fondo:"
+                     c1  <- listarOpc colores
+                     case indices [c1] of
+                          Left err -> cursorStart >> putStrLn (show err) >> verificaFColor p
+                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> return () else cursorStart >> verificaIColor p [digitToInt(c1)]
+
+verificaIColor :: Prior ->[Int] -> IO ()
+verificaIColor p i = do 
+                       putStrLn "Intensidad del color:"
+                       i1 <- listarOpc intensidad
+                       case indices [i1] of
+                            Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
+                            Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> return () else cursorStart >> verificaFuColor p (i++[digitToInt(i1)])
+
+verificaFuColor :: Prior ->[Int] -> IO ()
+verificaFuColor p i = do
+                         putStrLn "Color de Fuente:"
+                         c2  <- listarOpc colores
+                         case indices [c2] of
+                              Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
+                              Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> return () else cursorStart >> 
+
 
 --Listar el argumento en forma de opciones
 listarOpc :: [String] -> IO Char
@@ -279,13 +305,19 @@ auxParse (x:xs) =  do
 writeNews :: Priority -> [(String,Url)] -> Prior -> News -> IO ()
 writeNews Alta l p (N na1 nm1 nb1) = do
                                         let tam = length l
-                                        writeFile notistemp ( "# NA ("++ ushow l ++","++ ushow tam ++")"++"\n# NM "++ ushow nm1 ++"\n# NB "++ ushow nb1) >> secNotis
+                                        writeFile notistemp ( "# NA ("++ ushow l ++","++ ushow tam ++")"++"\n# NM "++ ushow (auxCorch nm1) ++"\n# NB "++ ushow (auxCorch nb1) ) >> secNotis
 writeNews Media l p (N na1 nm1 nb1)= do
                                         let tam = length l
-                                        writeFile notistemp ( "# NA "++ ushow na1 ++ "\n# NM ("++ ushow l ++","++ ushow tam ++")"++"\n# NB "++ ushow nb1) >> secNotis
+                                        writeFile notistemp ( "# NA "++ ushow (auxCorch na1) ++ "\n# NM ("++ ushow l ++","++ ushow tam ++")"++"\n# NB "++ ushow (auxCorch nb1)) >> secNotis
 writeNews Baja l p (N na1 nm1 nb1) = do
                                         let tam = length l
-                                        writeFile notistemp ( "# NA "++ ushow na1 ++ "\n# NM "++ ushow nm1 ++"\n# NB ("++ ushow l ++","++ ushow tam ++")") >> secNotis
+                                        writeFile notistemp ( "# NA "++ ushow (auxCorch na1) ++ "\n# NM "++ ushow (auxCorch nm1) ++"\n# NB ("++ ushow l ++","++ ushow tam ++")") >> secNotis
+
+
+--Para agregar {} al final del link
+auxCorch :: ([(String,Url)],Int) -> ([(String,Url)],Int)
+auxCorch tup = ( map (\intup -> ((fst intup ++ "{}"),snd intup) ) (fst tup), snd tup)
+
 
 indices :: [Char] -> Either PP.ParseError Int
 indices = PA.parse numeros
