@@ -160,30 +160,7 @@ elegirColor p = do
                      clearScreen
                      changeConfigCol p [digitToInt(c1),digitToInt(i1),digitToInt(c2),digitToInt(i2)] 
 
-verificarColor :: Prior -> IO ()
-verificarColor p = do
-                     putStrLn "\nElija su estilo "
-                     putStrLn "Color de Fondo:"
-                     c1  <- listarOpc colores
-                     case indices [c1] of
-                          Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
-                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> return () else cursorStart
-                     putStrLn "Intensidad del color:"
-                     i1 <- listarOpc intensidad
-                     case indices [i1] of
-                          Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
-                          Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> return () else cursorStart
-                     putStrLn "Color de Fuente:"
-                     c2  <- listarOpc colores
-                     case indices [c2] of
-                          Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
-                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> return () else cursorStart
-                     putStrLn "Intensidad del color:"
-                     i2 <- listarOpc intensidad
-                     case indices [i2] of
-                          Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
-                          Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> return () else cursorStart
-                     changeConfigCol p [digitToInt(c1),digitToInt(i1),digitToInt(c2),digitToInt(i2)] 
+    
                         
 
 verificaFColor :: Prior -> IO ()
@@ -193,23 +170,31 @@ verificaFColor p = do
                      c1  <- listarOpc colores
                      case indices [c1] of
                           Left err -> cursorStart >> putStrLn (show err) >> verificaFColor p
-                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> return () else cursorStart >> verificaIColor p [digitToInt(c1)]
+                          Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> verificaFColor p else cursorStart >> verificaIColor p [digitToInt(c1)]
 
 verificaIColor :: Prior ->[Int] -> IO ()
 verificaIColor p i = do 
                        putStrLn "Intensidad del color:"
                        i1 <- listarOpc intensidad
                        case indices [i1] of
-                            Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
-                            Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> return () else cursorStart >> verificaFuColor p (i++[digitToInt(i1)])
+                            Left err -> cursorStart >> putStrLn (show err) >> verificaIColor p i
+                            Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> verificaIColor p i else cursorStart >> verificaFuColor p (i++[digitToInt(i1)])
 
 verificaFuColor :: Prior ->[Int] -> IO ()
 verificaFuColor p i = do
                          putStrLn "Color de Fuente:"
                          c2  <- listarOpc colores
                          case indices [c2] of
-                              Left err -> cursorStart >> putStrLn (show err) >> verificarColor p
-                              Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> return () else cursorStart >> 
+                              Left err -> cursorStart >> putStrLn (show err) >> verificaFuColor p i
+                              Right x -> if x>7 then cursorStart >> putStrLn " El indice debe ser de 0 a 7" >> verificaFuColor p i else cursorStart >> verificaIColor2 p (i++[digitToInt(c2)])
+
+verificaIColor2 :: Prior ->[Int] -> IO ()
+verificaIColor2 p i = do 
+                        putStrLn "Intensidad del color:"
+                        i2 <- listarOpc intensidad
+                        case indices [i2] of
+                             Left err -> cursorStart >> putStrLn (show err) >> verificaIColor2 p i
+                             Right x -> if x>1 then cursorStart >> putStrLn " El indice debe ser de 0 a 1" >> verificaIColor2 p i else cursorStart >> changeConfigCol p (i++[digitToInt(i2)])
 
 
 --Listar el argumento en forma de opciones
@@ -283,13 +268,13 @@ auxPrint (a,b) = putStrLn $ (ushow a++"- " ++ fst b)
 updateNews :: Priority -> Prior -> News -> IO Int
 updateNews Alta p n = let newslist = (a p)                          
                           in do 
-                               if (length newslist == 0) then putStrLn "No hay ningun diario en la lista." >> return 1 else do {scrapeo <- auxParse newslist ; writeNews Alta scrapeo p n ; return 0}
+                               if (length newslist == 0) then putStrLn "No hay ningun diario en la lista." >> writeNews Alta [] p n >> return 1 else do {scrapeo <- auxParse newslist ; writeNews Alta scrapeo p n ; return 0}
 updateNews Media p n = let newslist = (m p)                          
                            in do 
-                                if (length newslist == 0) then putStrLn "No hay ningun diario en la lista." >> return 1 else do {scrapeo <- auxParse newslist ; writeNews Media scrapeo p n ; return 0}
+                                if (length newslist == 0) then putStrLn "No hay ningun diario en la lista." >> writeNews Media [] p n >> return 1 else do {scrapeo <- auxParse newslist ; writeNews Media scrapeo p n ; return 0}
 updateNews Baja p n = let newslist = (b p)                          
                           in do 
-                               if (length newslist == 0) then putStrLn "No hay ningun diario en la lista." >> return 1 else do {scrapeo <- auxParse newslist ; writeNews Baja scrapeo p n ; return 0}
+                               if (length newslist == 0) then putStrLn "No hay ningun diario en la lista." >> writeNews Baja [] p n >> return 1 else do {scrapeo <- auxParse newslist ; writeNews Baja scrapeo p n ; return 0}
 
 
 --Escribe las Noticias junto con su Link en el archivo de noticias

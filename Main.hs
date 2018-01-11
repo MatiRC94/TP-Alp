@@ -136,7 +136,7 @@ actNoticias p n = do
                                                                                                                                                      0 ->  irUrl Baja news -- >> volverMenu
                          'v' -> return () --volverMenu 
                          'q' -> exitSuccess
-                         _   -> putStrLn "Tecla incorrecta" >> actNoticias p n
+                         _   -> cursorStart >> putStrLn "Tecla incorrecta" >> actNoticias p n
 
 -- Abre el Link elegido si el indice es correcto
 --irUrl2 :: Priority -> News -> IO ()
@@ -166,10 +166,10 @@ parsercito2 :: String -> Priority -> News -> IO ()
 parsercito2 s p n = case indices s of
                          Right 0 -> putStrLn "Elegiste el 0" >> return ()
                          Right x -> case str of
-                                         Left inderr -> putStrLn ("El indice "++show x++" es erroneo") >> irUrl p n
+                                         Left inderr -> cursorStart >> putStrLn ("El indice "++show x++" es erroneo") >> irUrl p n
                                          Right url   -> (runCommand $ "firefox "++url) >> irUrl p n
                                     where str = getUrlNews p n x
-                         Left err  -> putStrLn (show err) >> irUrl p n
+                         Left err  -> cursorStart >> putStrLn (show err) >> irUrl p n
 
 
 --Parser para corroborar que lo ingresado sea un indice 
@@ -192,7 +192,7 @@ infoRss pr conf = do
                          '3' -> agregarLinks (conf,pr) -- >> volverMenu 
                          'v' -> return () --volverMenu 
                          'q' -> exitSuccess
-                         _   -> putStrLn "Tecla incorrecta" >> infoRss pr conf
+                         _   -> cursorStart >> putStrLn "Tecla incorrecta" >> infoRss pr conf
 
 
 --Eliminar un Link RSS si el link se encuentra en la lista
@@ -203,7 +203,7 @@ eliminarRss pr conf = putStrLn "Ingrese Link RSS o escriba 'v':" >>
                       putStrLn ( url++"\n Removido de la lista ") else 
                       case url of 
                            "v" -> return ()
-                           _ ->putStrLn (url++"  no es una Url valida, debe escribirla exactamente como esta guardada") >> eliminarRss pr conf
+                           _ -> cursorStart >> putStrLn (url++"  no es una Url valida, debe escribirla exactamente como esta guardada") >> eliminarRss pr conf
 
                       
 
@@ -215,11 +215,11 @@ graphOptions p =  do
                     putStrLn "Que desea hacer ?"
                     c <- listarOpc opGraph
                     case c of
-                         '1' -> verificarColor p >> return () --volverMenu --elegirColor p cambiado por verificarColor p
+                         '1' -> cursorStart >> verificaFColor p >> return () --volverMenu --elegirColor p cambiado por verificarColor p
                          '2' -> defaultConfig >> return () --volverMenu 
                          'q' -> exitSuccess
                          'v' -> return () --volverMenu 
-                         _   -> putStrLn "Tecla incorrecta" >> graphOptions p
+                         _   -> cursorStart >> putStrLn "Tecla incorrecta" >> graphOptions p
 
 
 -- Main principal              
