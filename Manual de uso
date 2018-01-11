@@ -64,14 +64,18 @@ En el Informe se explica que representa cada comando.
 
 Algunos links para probarlo, tener en cuenta que las https no funcionan:
 
+
 http://www.perfil.com/rss/ultimomomento.xml
 http://www.laizquierdadiario.com/spip.php?page=backend_portada
+http://ep00.epimg.net/rss/tags/ultimas_noticias.xml         -- BBC
+http://feeds.bbci.co.uk/mundo/rss.xml                       -- ELPAIS
+http://rss.cnn.com/rss/edition.rss                          -- CNN
+http://www.20minutos.es/rss/                                --20minutos
 http://contenidos.lanacion.com.ar/herramientas/rss-origen=2
 http://www.prensa.com/rss/section/1/
 http://www.lapoliticaonline.com/files/rss/ultimasnoticias.xml
 http://www.ellitoral.com/rss/um.xml    
 http://www.neuquenalinstante.com.ar/rss/1-sociedad.xml
-http://www.eltribuno.info/rss/salta/masleidas.xml
 http://diariolaopinion.com.ar/rss/general.xml
 
 
@@ -80,14 +84,12 @@ http://diariolaopinion.com.ar/rss/general.xml
 =================================================================
 
 En el momento de desarrollo del proyecto estos links fueron probados
-exitosamente en varias ocasioens, pero hay que tener en cuenta que el
-parseo de los títulos puede fallar si el diario utiliza algun caracter
+exitosamente en varias ocasiones. Hay que tener en cuenta que solos funciona
+con webs con HTTP y no funciona con HTTPS, ademas el
+parseo de los títulos puede fallar si el servicio utiliza algun caracter
 extraño en su texto que puedo no haber tenido en cuenta en el parser,
-lo que nos devolverá un error de parseo con el error siguiente:
+lo que nos devolverá un error de parseo. 
 
-TPFinalAlp: error en el parseo de feed
-
-Cerrandose posteriormente el programa.
 
 
 

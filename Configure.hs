@@ -32,9 +32,9 @@ bienvenida = "Bienvenido al Visor de noticias"
 
 
 
---TODO : hacer que ws pueda devolver Errores, quizas con Maybe y cambiar todo o Either
+
 --TODO : SI hay un error en Noticias.cfg no devuelve nada
--- TODO : ver cuando cambias de color que podes poner cualquier fruta ver arrreglo de parsercito2 del main
+
 
 
 
